@@ -1,0 +1,16 @@
+Min_domain_limit_x_y_z (m)
+-1,-0.5,-1
+Max_domain_limit_x_y_z (m)
+1,0.5,1
+Number_of_bins_x_y_z 
+10,5,10
+Min_sample_mass_cut_off (kg)
+2
+Min_sample_number_cut_off
+5
+Analysis_start_time (s)
+0.5
+Analysis_end_time(s)
+30.0
+Generate_plots?
+yes
