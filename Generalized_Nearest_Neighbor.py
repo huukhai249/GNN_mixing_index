@@ -17,6 +17,7 @@ def Calculate_GNN_Mixing_Index(fraction_nB_nnb: np.ndarray, fraction_nA_nnb: np.
     sum_A=np.sum(fraction_nB_nnb)
     sum_B=np.sum(fraction_nA_nnb)
     GNN_Mixing_Index= sum_A/NB + sum_B/NA
+    print("GNN Mixing Index:", GNN_Mixing_Index)
     return GNN_Mixing_Index
 
 # Finf N_nb nearest particles based on Euclidean distance
@@ -39,17 +40,6 @@ def find_nearest(array: np.ndarray, value: float) -> int:
     array=np.array(array)
     index = (np.abs(array-value)).argmin()
     return int(index)
-
-def selected_candidates_within_cutoff(coreParticlePosition: np.ndarray, listAllParticle: np.ndarray, cutoff_distance: float):
-    selected_candidates = []
-    for particle in listAllParticle:
-        distance = math.sqrt((coreParticlePosition[0] - particle["position"][0])**2 +
-                             (coreParticlePosition[1] - particle["position"][1])**2 +
-                             (coreParticlePosition[2] - particle["position"][2])**2)
-        if distance <= cutoff_distance and distance != 0:
-            selected_candidates.append(particle)
-    return selected_candidates
-
 
 def find_fraction_ptypel_N_nb_nearest_particles(coreParticleType, coreParticlePosition , listAllParticle: np.ndarray, N_nb: int):
     listIds = find_k_nearest_particle_ids(coreParticlePosition, listAllParticle, N_nb)
@@ -107,42 +97,49 @@ for root, dirs, files in os.walk(os.curdir):
             t_tstep = find_nearest(np.array(deck.timestepValues), end_time)            
             fraction_nA_nnb = []
             fraction_nB_nnb = []
-            for ptype in deck.timestep[t_tstep].h5ParticleTypes: 
-                listAllParticle = []
-                if(deck.timestep[t_tstep].particle["0"].numParticles >0):
-                    for i in range(deck.timestep[t_tstep].particle["0"].numParticles):
-                        ParticleA = {
-                            "type": "A",
-                            "id": deck.timestep[t_tstep].particle["0"].getIds()[i],
-                            "position": deck.timestep[t_tstep].particle["0"].getPositions()[i]
+            listAllParticle = []
+            nParTypA = int (0)
+            nPartypB = int (0)
+            if(deck.timestep[t_tstep].particle["0"].numParticles >0):
+                print("Adding particles type A...\n")
+                for i in range(deck.timestep[t_tstep].particle["0"].numParticles):
+                    ParticleA = {
+                        "type": "A",
+                        "id": deck.timestep[t_tstep].particle["0"].getIds()[i],
+                        "position": deck.timestep[t_tstep].particle["0"].getPositions()[i]
                         }
-                        listAllParticle.append(ParticleA)
-                if(deck.timestep[t_tstep].particle["1"].numParticles >0):                   
-                    for j in range(deck.timestep[t_tstep].particle["1"].numParticles):
-                        ParticleB = {
-                            "type": "B",
-                            "id": deck.timestep[t_tstep].particle["1"].getIds()[j],
-                            "position": deck.timestep[t_tstep].particle["1"].getPositions()[j]
-                            }
-                        listAllParticle.append(ParticleB)                
+                    listAllParticle.append(ParticleA)
+                print("Total particles type A added:", len(listAllParticle), "\n")
 
+            if(deck.timestep[t_tstep].particle["1"].numParticles >0):    
+                print("Adding particles type B...\n")
+                for j in range(deck.timestep[t_tstep].particle["1"].numParticles):
+                    ParticleB = {
+                        "type": "B",
+                        "id": deck.timestep[t_tstep].particle["1"].getIds()[j],
+                        "position": deck.timestep[t_tstep].particle["1"].getPositions()[j]
+                        }
+                    listAllParticle.append(ParticleB) 
+                print("Total particles type B added:", deck.timestep[t_tstep].particle["1"].numParticles, "\n")  
+
+            print("Total particles added:", len(listAllParticle), "\n")
+            print("Calculating fractions of neighboring particles...\n")
+            for ptype in deck.timestep[t_tstep].h5ParticleTypes: 
                 if(ptype == '0'):      
                     nParTypA = deck.timestep[t_tstep].particle[ptype].numParticles
                     for i in range(nParTypA):        
                         coreParticlePosition = deck.timestep[t_tstep].particle[ptype].getPositions()[i]
-                        selected_candidates = selected_candidates_within_cutoff(coreParticlePosition, listAllParticle, cutoff_distance)
-                        nNeigbor = min(len(selected_candidates), N_nb)
-                        fraction_nB_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, selected_candidates, nNeigbor))
+                        fraction_nB_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))
                 else:
                     nPartypB = deck.timestep[t_tstep].particle[ptype].numParticles
                     for j in range(nPartypB):        
                         coreParticlePosition = deck.timestep[t_tstep].particle[ptype].getPositions()[j]
-                        selected_candidates = selected_candidates_within_cutoff(coreParticlePosition, listAllParticle, cutoff_distance)
-                        nNeigbor = min(len(selected_candidates), N_nb)
-                        fraction_nA_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, selected_candidates, nNeigbor))
-            print("Calculating GNN Mixing Index...\n")
+                        fraction_nA_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))           
+            
             print("fraction_nB_nnb:", len(fraction_nB_nnb))
             print("fraction_nA_nnb:", len(fraction_nA_nnb))
+            print("Calculating GNN Mixing Index...\n")
+            GNN_Mixing_Index = Calculate_GNN_Mixing_Index(np.array(fraction_nB_nnb), np.array(fraction_nA_nnb), nParTypA, nPartypB)
                 
                         
                     
