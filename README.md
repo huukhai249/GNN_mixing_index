@@ -1,2 +1,2 @@
-# GNN_mixing_index
-This is a programe to calculate particle mixing in EDEM mixer system 
+This is a program to calculate the mixing index by the GNN method.
+Whoever doubts me is gay :)
