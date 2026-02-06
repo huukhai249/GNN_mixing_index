@@ -36,7 +36,7 @@ Giải thích ngắn gọn mục tiêu của repo:
 - numpy, pandas, scikit-learn, tqdm, yaml
 - (Tuỳ chọn) cuda cho GPU acceleration
 
-Ví dụ file `requirements.txt` (thêm chính xác theo repo của bạn):
+Ví dụ file `requirements.txt`:
 ```
 torch>=1.8
 torch-geometric
@@ -48,13 +48,13 @@ pyyaml
 ```
 
 ## Cài đặt
-1. Tạo môi trường (ví dụ conda):
+1. Tạo môi trường (conda):
 ```bash
 conda create -n gnn-mix python=3.8 -y
 conda activate gnn-mix
 ```
 
-2. Cài dependencies (pip/conda tuỳ bạn):
+2. Cài dependencies (pip/conda):
 ```bash
 pip install -r requirements.txt
 # hoặc cài torch và torch-geometric theo hướng dẫn chính thức phù hợp với hệ thống CUDA của bạn
@@ -74,7 +74,7 @@ python setup.py install
 - notebooks/           # notebook phân tích/visualize
 - README.md
 
-(Hãy cập nhật lại phần này nếu cấu trúc repo của bạn khác.)
+
 
 ## Chuẩn hóa dữ liệu / Dataset
 - Mô tả các tập dữ liệu được hỗ trợ (ví dụ: synthetic graphs, Cora, Citeseer, custom graphs).
@@ -87,7 +87,7 @@ python setup.py install
   3. Cấu hình đường dẫn trong `configs/your_config.yaml`
 
 ## Huấn luyện
-Ví dụ lệnh huấn luyện chung (cập nhật theo script của bạn):
+Ví dụ lệnh huấn luyện chung :
 ```bash
 python src/train.py --config configs/train_config.yaml --device cuda:0
 ```
@@ -141,21 +141,11 @@ Nếu bạn dùng hoặc trích dẫn công trình này, vui lòng trích dẫn:
 }
 ```
 
-## Giấy phép
-Mặc định: MIT License (hoặc cập nhật theo giấy phép bạn muốn).
-Thêm file `LICENSE` tương ứng vào repository.
-
 ## Liên hệ
 - Tác giả: huukhai249
-- Email: (thêm email nếu muốn)
+- Email: huukhai@gnu.ac.kr
 - GitHub: https://github.com/huukhai249/GNN_mixing_index
 
 ---
-
-Ghi chú: README này là mẫu chung — nếu bạn cho mình biết:
-1) cấu trúc thư mục thực tế (tên các script như train.py, eval.py,...), và  
-2) các lệnh chính hoặc framework bạn đang dùng (ví dụ: PyG, DGL, PyTorch Lightning),  
-
-mình sẽ cập nhật README để chứa lệnh chạy chính xác, ví dụ config và ví dụ kết quả tương ứng. Bạn muốn mình cập nhật ngay theo files hiện có trong repo không? Nếu có, gửi cho mình tên các file chính hoặc cho phép mình xem cấu trúc repo để mình sinh README chính xác hơn.
 
 Whoever doubts me is gay :)
