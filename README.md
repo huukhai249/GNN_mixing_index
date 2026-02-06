@@ -1,7 +1,5 @@
 # GNN_mixing_index
 
-Một mô tả ngắn: dự án "GNN_mixing_index" nghiên cứu/triển khai các phương pháp Graph Neural Network (GNN) để tính và phân tích "mixing index" trên đồ thị. README này cung cấp hướng dẫn cài đặt, chạy thử nghiệm, huấn luyện và đánh giá mô hình.
-
 ## Mục lục
 - [Tổng quan](#tổng-quan)
 - [Tính năng chính](#tính-năng-chính)
