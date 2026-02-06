@@ -124,8 +124,6 @@ for root, dirs, files in os.walk(os.curdir):
                                 }
                             listAllParticle.append(ParticleA)
                         print("Total particles type A added:", len(listAllParticle), "\n")
-                    else:
-                        print("No particles type A found!\n")
 
                     if(deck.timestep[t_tstep].particle["1"].numParticles >0):    
                         print("Adding particles type B...\n")
@@ -137,8 +135,7 @@ for root, dirs, files in os.walk(os.curdir):
                                 }
                             listAllParticle.append(ParticleB) 
                         print("Total particles type B added:", deck.timestep[t_tstep].particle["1"].numParticles, "\n")  
-                    else:   
-                        print("No particles type B found!\n")
+
                     print("Total particles added:", len(listAllParticle), "\n")
                     print("Calculating fractions of neighboring particles...\n")
                     for ptype in deck.timestep[t_tstep].h5ParticleTypes: 
@@ -154,7 +151,7 @@ for root, dirs, files in os.walk(os.curdir):
                                 fraction_nA_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))           
                     
                     print("fraction_nB_nnb len:", len(fraction_nB_nnb),"\n")
-                    print("fraction_nA_nnb len:", len(fraction_nA_nnb), "\n")
+                    print("fraction_nA_nnb len:", len(fraction_nA_nnb),"\n")
                     print("Calculating GNN Mixing Index...\n")
                     GNN_Mixing_Index[t_tstep] = Calculate_GNN_Mixing_Index(np.array(fraction_nB_nnb), np.array(fraction_nA_nnb), nParTypA, nPartypB)
                 
