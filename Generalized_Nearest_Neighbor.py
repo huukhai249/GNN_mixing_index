@@ -97,8 +97,7 @@ for root, dirs, files in os.walk(os.curdir):
                 settings=False
             
             #Check if simulation is run to the end
-            if settings==True:
-                    
+            if settings==True:                    
                 print("-------------------------------------------------------")
                 print("Processing: " + str(name) + ".dem")
                 print("-------------------------------------------------------")
