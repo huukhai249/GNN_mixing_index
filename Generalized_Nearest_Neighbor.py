@@ -16,8 +16,15 @@ def Calculate_GNN_Mixing_Index(fraction_nB_nnb: np.ndarray, fraction_nA_nnb: np.
                                NA: int,NB:int) -> float:
     sum_A=np.sum(fraction_nB_nnb)
     sum_B=np.sum(fraction_nA_nnb)
-    GNN_Mixing_Index= sum_A/NB + sum_B/NA
-    print("GNN Mixing Index:", GNN_Mixing_Index)
+    if NA ==0:
+        print("No particles of type A found, GNN Mixing Index cannot be calculated.\n")
+        GNN_Mixing_Index = 0
+    if NB ==0:
+        print("No particles of type B found, GNN Mixing Index cannot be calculated.\n")
+        GNN_Mixing_Index = 0
+    else:
+        GNN_Mixing_Index= sum_A/NB + sum_B/NA
+    print("========== GNN Mixing Index:", GNN_Mixing_Index, "==========\n")
     return GNN_Mixing_Index
 
 # Finf N_nb nearest particles based on Euclidean distance
@@ -66,8 +73,6 @@ for root, dirs, files in os.walk(os.curdir):
         
             print ("-------------------------------------------------------")
             print ("Loading: "+str(name)+".dem")
-
-
             print ("-------------------------------------------------------")
             
             deck=Deck(os.path.join(root,file))
@@ -87,59 +92,71 @@ for root, dirs, files in os.walk(os.curdir):
                     print("N_nb:",N_nb)
                     plots=str(preferences[7])
                     print("plots:",plots)
-                    cutoff_distance = float(preferences[9])*6
-                    print("cutoff_distance:",cutoff_distance)
                 settings=True
             else:
                 settings=False
             
             #Check if simulation is run to the end
-            t_tstep = find_nearest(np.array(deck.timestepValues), end_time)            
-            fraction_nA_nnb = []
-            fraction_nB_nnb = []
-            listAllParticle = []
-            nParTypA = int (0)
-            nPartypB = int (0)
-            if(deck.timestep[t_tstep].particle["0"].numParticles >0):
-                print("Adding particles type A...\n")
-                for i in range(deck.timestep[t_tstep].particle["0"].numParticles):
-                    ParticleA = {
-                        "type": "A",
-                        "id": deck.timestep[t_tstep].particle["0"].getIds()[i],
-                        "position": deck.timestep[t_tstep].particle["0"].getPositions()[i]
-                        }
-                    listAllParticle.append(ParticleA)
-                print("Total particles type A added:", len(listAllParticle), "\n")
+            if settings==True:
+                    
+                print("-------------------------------------------------------")
+                print("Processing: " + str(name) + ".dem")
+                print("-------------------------------------------------------")
+                # Find timestep start, timestep end and num of timesteps
+                start_tstep = find_nearest(np.array(deck.timestepValues), start_time)
+                end_tstep = find_nearest(np.array(deck.timestepValues), end_time)
+                num_steps = end_tstep - start_tstep
+                GNN_Mixing_Index = np.zeros(num_steps)
+                for t_tstep in range(start_tstep, end_tstep):
+                    print("Processing timestep:", t_tstep, "Time:", deck.timestepValues[t_tstep], "s...\n")
+                    fraction_nA_nnb = []
+                    fraction_nB_nnb = []
+                    listAllParticle = []
+                    nParTypA = int (0)
+                    nPartypB = int (0)
+                    if(deck.timestep[t_tstep].particle["0"].numParticles >0):
+                        print("Adding particles type A...\n")
+                        for i in range(deck.timestep[t_tstep].particle["0"].numParticles):
+                            ParticleA = {
+                                "type": "A",
+                                "id": deck.timestep[t_tstep].particle["0"].getIds()[i],
+                                "position": deck.timestep[t_tstep].particle["0"].getPositions()[i]
+                                }
+                            listAllParticle.append(ParticleA)
+                        print("Total particles type A added:", len(listAllParticle), "\n")
+                    else:
+                        print("No particles type A found!\n")
 
-            if(deck.timestep[t_tstep].particle["1"].numParticles >0):    
-                print("Adding particles type B...\n")
-                for j in range(deck.timestep[t_tstep].particle["1"].numParticles):
-                    ParticleB = {
-                        "type": "B",
-                        "id": deck.timestep[t_tstep].particle["1"].getIds()[j],
-                        "position": deck.timestep[t_tstep].particle["1"].getPositions()[j]
-                        }
-                    listAllParticle.append(ParticleB) 
-                print("Total particles type B added:", deck.timestep[t_tstep].particle["1"].numParticles, "\n")  
-
-            print("Total particles added:", len(listAllParticle), "\n")
-            print("Calculating fractions of neighboring particles...\n")
-            for ptype in deck.timestep[t_tstep].h5ParticleTypes: 
-                if(ptype == '0'):      
-                    nParTypA = deck.timestep[t_tstep].particle[ptype].numParticles
-                    for i in range(nParTypA):        
-                        coreParticlePosition = deck.timestep[t_tstep].particle[ptype].getPositions()[i]
-                        fraction_nB_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))
-                else:
-                    nPartypB = deck.timestep[t_tstep].particle[ptype].numParticles
-                    for j in range(nPartypB):        
-                        coreParticlePosition = deck.timestep[t_tstep].particle[ptype].getPositions()[j]
-                        fraction_nA_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))           
-            
-            print("fraction_nB_nnb:", len(fraction_nB_nnb))
-            print("fraction_nA_nnb:", len(fraction_nA_nnb))
-            print("Calculating GNN Mixing Index...\n")
-            GNN_Mixing_Index = Calculate_GNN_Mixing_Index(np.array(fraction_nB_nnb), np.array(fraction_nA_nnb), nParTypA, nPartypB)
+                    if(deck.timestep[t_tstep].particle["1"].numParticles >0):    
+                        print("Adding particles type B...\n")
+                        for j in range(deck.timestep[t_tstep].particle["1"].numParticles):
+                            ParticleB = {
+                                "type": "B",
+                                "id": deck.timestep[t_tstep].particle["1"].getIds()[j],
+                                "position": deck.timestep[t_tstep].particle["1"].getPositions()[j]
+                                }
+                            listAllParticle.append(ParticleB) 
+                        print("Total particles type B added:", deck.timestep[t_tstep].particle["1"].numParticles, "\n")  
+                    else:   
+                        print("No particles type B found!\n")
+                    print("Total particles added:", len(listAllParticle), "\n")
+                    print("Calculating fractions of neighboring particles...\n")
+                    for ptype in deck.timestep[t_tstep].h5ParticleTypes: 
+                        if(ptype == '0'):      
+                            nParTypA = deck.timestep[t_tstep].particle[ptype].numParticles
+                            for i in range(nParTypA):        
+                                coreParticlePosition = deck.timestep[t_tstep].particle[ptype].getPositions()[i]
+                                fraction_nB_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))
+                        else:
+                            nPartypB = deck.timestep[t_tstep].particle[ptype].numParticles
+                            for j in range(nPartypB):        
+                                coreParticlePosition = deck.timestep[t_tstep].particle[ptype].getPositions()[j]
+                                fraction_nA_nnb.append(find_fraction_ptypel_N_nb_nearest_particles(ptype, coreParticlePosition, listAllParticle, N_nb))           
+                    
+                    print("fraction_nB_nnb len:", len(fraction_nB_nnb),"\n")
+                    print("fraction_nA_nnb len:", len(fraction_nA_nnb), "\n")
+                    print("Calculating GNN Mixing Index...\n")
+                    GNN_Mixing_Index[t_tstep] = Calculate_GNN_Mixing_Index(np.array(fraction_nB_nnb), np.array(fraction_nA_nnb), nParTypA, nPartypB)
                 
                         
                     
