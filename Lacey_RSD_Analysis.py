@@ -44,6 +44,8 @@ For any questions or suggestions, please contact the address above
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # safe for headless
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from math import floor

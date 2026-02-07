@@ -1,5 +1,5 @@
 Analysis_start_time (s)
-1
+0.5
 Analysis_end_time(s)
 30.0
 Number of Neigbor Particle

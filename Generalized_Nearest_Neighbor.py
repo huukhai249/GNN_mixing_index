@@ -6,10 +6,6 @@ import matplotlib
 matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 
-import math
-import os
-import os.path
-import csv
 
 
 def Calculate_GNN_Mixing_Index(fraction_nB_nnb: np.ndarray, fraction_nA_nnb: np.ndarray, 

@@ -211,7 +211,7 @@ def process_dem_file(dem_path: str, settings_path: str):
     # Find nearest timesteps by time
     tvals = np.array(deck.timestepValues)
     start_tstep = int(np.abs(tvals - start_time).argmin())
-    end_tstep = int(np.abs(tvals - end_time).argmin())
+    end_tstep = int(np.abs(tvals - end_time).argmin()) + 1  # inclusive
     if end_tstep <= start_tstep:
         logging.warning("end_tstep <= start_tstep -> nothing to do.")
         return
